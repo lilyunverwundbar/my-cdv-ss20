@@ -66,13 +66,6 @@ function createSquares() {
         container.appendChild(box);
     }
 
-    //trigger the fade-in transiton by changig opacity with an async function
-    setTimeout(() => {
-        container.childNodes.forEach((n) => {
-            n.classList.toggle("in");
-        })
-    }, 0);
-
 }
 
 // adding style to a box based on the given parapeters and index
