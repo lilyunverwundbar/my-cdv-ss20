@@ -1,5 +1,5 @@
 ### Reading Response - Week 1
-To [Critical Questions for Big Data](https://github.com/leoneckert/critical-data-and-visualization-spring-2020/blob/master/readings/boyd_crawford_2012.pdf) by danah boyd and Kate Crawford (2012).
+To [Critical Questions for Big Data](https://github.com/leoneckert/critical-data-and-visualization-spring-2020/blob/master/readings/boyd_crawford_2012.pdf) by Danah Boyd and Kate Crawford (2012).
 
 * #### Introduction and Chapter 2
   ##### *Why does Bowker say "''Raw data is both an oxymoron and a bad idea"? (pp.663)*  
