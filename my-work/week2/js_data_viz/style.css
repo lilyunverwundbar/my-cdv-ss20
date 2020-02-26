@@ -1,0 +1,19 @@
+body {
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+
+.bar {
+    height: 40px;
+    width: 0px;
+    background-color: seagreen;
+    margin-bottom: 1px;
+    color: white;
+    transition: width 3s, opacity 0.2s;
+    text-align: left;
+}
+
+.bar:hover {
+    opacity: 0.8;
+}
