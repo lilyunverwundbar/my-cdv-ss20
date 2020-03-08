@@ -71,6 +71,7 @@ function handleMouseOver(d, i) { // Add interactivity
         })
         .attr('x', size)
         .attr('y', size)
+        .style('fill', 'white')
     text.append('tspan')
         .attr('x', size)
         .attr('y', size)
