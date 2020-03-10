@@ -1,0 +1,2 @@
+##### D3 Exercise for using groups
+My submission for this assignment is to implement the one of the visualizations I plan to do for the Datazine project using the techniques taught last week. That is why the provided [code template](https://github.com/leoneckert/critical-data-and-visualization-spring-2020/blob/master/other/material/datazine-template.zip) is used here, with no index entry.
