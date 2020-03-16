@@ -1,0 +1,2 @@
+### Datazine of a month of Chrome history
+This is a datazine that visualizae my internet traffic on Chrome during the month of February 2020, based on this [code template](https://github.com/leoneckert/critical-data-and-visualization-spring-2020/blob/master/other/material/datazine-template.zip).
