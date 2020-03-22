@@ -28,6 +28,7 @@ const hourFormat = d3.timeFormat('%H');
 
 
 function gotData(data) {
+
     initCalendar(data);
     initClock(data);
     // initDots(data);
@@ -43,7 +44,7 @@ function initCalendar(data) {
         .attr('id', 'calendarSection')
         .attr('transform', 'translate(' + calendarOffset[0] + ',' + calendarOffset[1] + ')')
         .attr('text-anchor', 'middle')
-        .attr('fill', COLOR.orange)
+        .attr('fill', COLOR.yellow)
         .attr('font-family', 'Gill Sans');
 
     let calendarLegendGroup = calendarSection.append('g')
@@ -106,8 +107,7 @@ function initCalendar(data) {
 
     let calengerLegend = calendarLegendGroup.append('g')
         .attr('transform', 'translate(' + (7 * 100 - 20) + ',' + 630 + ')')
-        .attr('fill', COLOR.violet)
-        .attr('fill-opacity', 0.7)
+        .attr('fill', COLOR.yellow)
         .attr('text-anchor', 'end')
 
 
@@ -116,7 +116,7 @@ function initCalendar(data) {
 
 
     calengerLegend.append('text')
-        .text("I seemed to browse more after then.")
+        .text("Since then, I seemed to browse more.")
         .attr('x', 0)
         .attr('y', 20)
 
@@ -174,7 +174,6 @@ function initClock(data) {
         outerRadius = size / 2;
 
     let hourCountData = getHourCount(data);
-
     let clockSection = viz.append('g')
         .attr('id', 'clockSection')
         .attr('transform', 'translate(' + w + ',' + (h / 2 + 20) + ')')
@@ -261,6 +260,40 @@ function initClock(data) {
             return 'rotate(' + (d * 15) + ')';
         });
 
+    let peakLegend = clockSection.append('g')
+        .attr('stroke', COLOR.yellow)
+        .attr('fill', COLOR.yellow);
+
+    peakLegend.append('line')
+        .attr('x1', 0)
+        .attr('y1', -180)
+        .attr('x2', 0)
+        .attr('y2', -450)
+        .attr('transform', `rotate(-30)`)
+    peakLegend.append('text')
+        .text('10PM has most traffic of the month')
+        .attr('transform', `translate(-153,-278) rotate(90) rotate(-30)`)
+    peakLegend.append('text')
+        .text('639 views in total')
+        .attr('transform', `translate(-170,-260) rotate(90) rotate(-30)`)
+
+    let peakLegend2 = clockSection.append('g')
+        .attr('stroke', COLOR.violet)
+        .attr('fill', COLOR.violet);
+
+    peakLegend2.append('line')
+        .attr('x1', 0)
+        .attr('y1', 180)
+        .attr('x2', 0)
+        .attr('y2', 382)
+        .attr('transform', `rotate(30)`)
+    peakLegend2.append('text')
+        .text('489 views in total')
+        .attr('transform', `translate(-132,261) rotate(-90) rotate(30)`)
+    peakLegend2.append('text')
+        .text('2PM has the second most')
+        .attr('transform', `translate(-149,243) rotate(-90) rotate(30)`)
+
 
     function getHourCount(data) {
         //create an array of all the hour numbers in a day
@@ -287,7 +320,26 @@ function initClock(data) {
 }
 
 function initWordCloud(wordcountData) {
-    wordcountData = wordcountData.slice(0, -1)
+    var backgroundGradient = viz.append("defs")
+        .append("linearGradient")
+        .attr("id", "background-gradient")
+        .attr("gradientTransform", "rotate(0)");
+    backgroundGradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", COLOR.violet);
+
+    backgroundGradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", COLOR.yellow);
+
+
+    viz.append('rect')
+        .attr('width', 2400)
+        .attr('height', 800)
+        .attr("fill", "url(#background-gradient)")
+
+
+    wordcountData = wordcountData.slice(0, 2000)
     let length;
     let wordCloudSection = viz.append('g')
         .attr('id', 'wordCloudSection')

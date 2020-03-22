@@ -6,7 +6,7 @@ const COLOR = {
     'gray': '#444444',
     'lightgray': '#D2D2D2'
 }
-COLOR.backgroundColor = "white"
+COLOR.backgroundColor = 'white'
 
 const viz = d3.select('#container')
     .append('svg')
@@ -36,6 +36,25 @@ const RANDOM_COLORS = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
 ]
 
 function initDots(data) {
+    var backgroundGradient = viz.append("defs")
+        .append("linearGradient")
+        .attr("id", "background-gradient")
+        .attr("gradientTransform", "rotate(90)");
+    backgroundGradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", COLOR.yellow);
+
+    backgroundGradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", COLOR.violet);
+
+
+    viz.append('rect')
+        .attr('width', 1200)
+        .attr('height', 800)
+        .attr("fill", "url(#background-gradient)")
+
+
     const dot_row = 54;
     const dot_radius = 4;
     const dot_size = 10;
@@ -45,6 +64,7 @@ function initDots(data) {
     let cities = getCities(locationCountData);
     let countries = getCountries(locationCountData);
 
+
     let dotSection = viz.append('g')
         .attr('id', 'dotSection')
         .attr('transform', 'translate(' + 50 + ',' + 40 + ')')
@@ -52,7 +72,36 @@ function initDots(data) {
         .attr('font-family', 'Gill Sans');
 
 
-    dotSection.selectAll('.location-dot')
+
+    let dotTitle = dotSection.append('mask')
+        .attr('id', 'myMask')
+        .attr('transform', 'translate(' + w / 2 + ',' + h / 2 + ')')
+        .attr('font-size', 100)
+        .attr('fill', COLOR.backgroundColor)
+        .attr("fill", "black")
+
+    dotTitle.append('rect')
+        .attr('x', -50)
+        .attr('y', -40)
+        .attr('width', w)
+        .attr('height', h)
+        .attr('fill', '#fff')
+    dotTitle.append('text')
+        .text(`${locationDots.length} Online Visits`)
+        .attr('x', w / 2 - 50)
+        .attr('y', h / 2 - 170 - 40)
+    dotTitle.append('text')
+        .text(`${cities.length} Cities`)
+        .attr('x', w / 2 - 50)
+        .attr('y', h / 2 - 70 - 40)
+    dotTitle.append('text')
+        .text(`${countries.length} Countries`)
+        .attr('x', w / 2 - 50)
+        .attr('y', h / 2 + 30 - 40)
+
+    let dots = dotSection.append('g')
+        .attr('mask', 'url(#myMask)')
+    dots.selectAll('.location-dot')
         .data(locationDots).enter()
         .append('circle')
         .attr('r', dot_radius)
@@ -82,35 +131,7 @@ function initDots(data) {
         .attr('font-weight', (d, i) => {
             if (i < legendRow) return 'bold'
         })
-    var backgroundGradient = viz.append("defs")
-        .append("linearGradient")
-        .attr("id", "background-gradient")
-        .attr("gradientTransform", "rotate(90)");
-    backgroundGradient.append("stop")
-        .attr("offset", "0%")
-        .attr("stop-color", COLOR.yellow);
 
-    backgroundGradient.append("stop")
-        .attr("offset", "100%")
-        .attr("stop-color", COLOR.violet);
-
-    let dotTitle = dotSection.append('g')
-        .attr('transform', 'translate(' + w / 2 + ',' + h / 2 + ')')
-        .attr('font-size', 100)
-        .attr('fill', COLOR.backgroundColor)
-    // .attr('fill', 'url(#background-gradient)')
-
-
-
-
-    dotTitle.append('text')
-        .text(`${locationDots.length} Online Visits`)
-        .attr('y', -200)
-    dotTitle.append('text')
-        .text(`${cities.length} Cities`)
-        .attr('y', -100)
-    dotTitle.append('text')
-        .text(`${countries.length} Countries`)
 
     function getLegendTranslation(d, i) {
         let x = Math.floor(i / legendRow);
@@ -121,7 +142,7 @@ function initDots(data) {
     function getLocationDotColor(d, i) {
         let dotColor = d3.scaleOrdinal(d3.schemeDark2)
             .domain(cities).range(RANDOM_COLORS);
-        return d3.rgb(dotColor(d.city)).darker()
+        return d3.rgb(dotColor(d.city))
     }
 
     function getLocationDotTranslation(d, i) {
