@@ -6,7 +6,7 @@
 ![Forensic](./images/bbc1.jpg)
 
 #### *How the Virus Got Out*
-[*How the Virus Got Out*](https://www.nytimes.com/interactive/2020/03/22/world/coronavirus-spread.html) is an animated data visualzation tracing the movement of people across the globe. Having heard plenty of news from mid January as a Chinese person, the textual details of the report are nothing new to me, but the visualization is truly refreshing for bringing the scale of impact and the chronology of events to life. The global landscape is visualized as routes of human traffic instead of a geological map. Compared with a static visualzation, the animated particles in the NYT version create the urgent liveness, of how people travel in the age of globalization and the unstoppable nature of virus. 
+[*How the Virus Got Out*](https://www.nytimes.com/interactive/2020/03/22/world/coronavirus-spread.html) is an animated data visualzation tracing the movement of people across the globe, published by NYT on March 22 2020. Having heard plenty of news from mid January as a Chinese person, the textual details of the report are nothing new to me, but the visualization is truly refreshing for bringing the scale of impact and the chronology of events to life. The global landscape is visualized as routes of human traffic instead of a geological map. Compared with a static visualzation, the animated particles in the NYT version create the urgent liveness, of how people travel in the age of globalization and the unstoppable nature of virus. 
 
 ![How the Virus Got Out](./images/nyt1.jpg)
 
