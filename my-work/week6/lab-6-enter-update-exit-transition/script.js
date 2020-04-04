@@ -70,7 +70,7 @@ function gotData(incomingData) {
       .attr('transform', getTopLocation).remove()
 
     // UPDATING ELEMENTS
-    dataGroups.transition().duration(750).attr('transform', getGroupLocation)
+    dataGroups.transition().duration(750).delay((d, i) => i * 400).attr('transform', getGroupLocation)
     dataGroups.select('text').text((d) => d.name)
 
     function getTopLocation(d, i) {
