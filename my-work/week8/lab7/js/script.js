@@ -10,16 +10,17 @@ console.log(typeof data !== 'undefined' ? "seems like it ;-) it comes from the d
 let w = 800;
 let h = 500;
 let padding = 50;
-let xScale, xAxis, xAxisGroup, yMax, yDomain, yScale;
-let graphGroup;
+let viz, xAxisGroup, graphGroup;
+let xScale, xAxis, yMax, yDomain, yScale;
 
-let UNITTIME = 200;
+const UNITTIME = 200;
 
-
-let viz = d3.select('#container')
+viz = d3.select('#container')
     .append('svg')
     .style('width', w)
     .style('height', h)
+xAxisGroup = viz.append('g').classed('xAxis', true);
+graphGroup = viz.append('g').classed('graphGroup', true)
 
 function add() {
     addDatapoints(1);
@@ -51,13 +52,12 @@ function shuffle() {
     refreshGraph();
 }
 
-
 d3.selectAll("#buttonA").on("click", add);
 d3.selectAll("#buttonB").on("click", remove);
 d3.selectAll("#buttonC").on("click", addAndRemove);
 d3.selectAll("#buttonD").on("click", sort);
 d3.selectAll("#buttonE").on("click", shuffle);
-d3.selectAll("#buttonF").on("click", function () {
+d3.selectAll("#buttonF").on("click", () => {
     removeAndAddDatapoints(Math.random() * data.length, Math.random() * data.length * 2);
     refreshAxis();
     refreshGraph();
@@ -66,8 +66,6 @@ d3.selectAll("#buttonF").on("click", function () {
 
 
 // AXIS
-xAxisGroup = viz.append('g').classed('xAxis', true);
-
 function refreshAxis() {
     let allNames = data.map(d => d.key)
     xScale = d3.scaleBand()
@@ -92,8 +90,6 @@ refreshAxis()
 
 
 // GRAPH
-graphGroup = viz.append('g').classed('graphGroup', true)
-
 function refreshGraph() {
     let elementsForPage = graphGroup.selectAll('.datapoint').data(data, d => d.key);
     let enteringElements = elementsForPage.enter();
