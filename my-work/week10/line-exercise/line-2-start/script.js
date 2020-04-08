@@ -58,7 +58,7 @@ function gotData(incomingData) {
     .y(d => d3.randomUniform(h - ypadding, ypadding)())
 
 
-  graphGroup.selectAll('.line').data([incomingData[0]]).enter()
+  graphGroup.selectAll('.line').data([incomingData[0]], d => d.year).enter()
     .append('path')
     .attr('d', lineMaker)
     .attr('fill', 'none')
@@ -68,8 +68,7 @@ function gotData(incomingData) {
 
 
   d3.select('#china').on('click', function () {
-    graphGroup.selectAll('.line').data([incomingData[1]]).enter()
-    graphGroup.selectAll('path')
+    graphGroup.selectAll('.line').data([incomingData[1]], d => d.year)
       .transition()
       .attr('d', lineRandomizer)
       .attr('stroke', 'black')
@@ -78,8 +77,7 @@ function gotData(incomingData) {
       .attr('stroke', d => (d[0].country == 'United States') ? 'blue' : 'red')
   })
   d3.select('#usa').on('click', function () {
-    graphGroup.selectAll('.line').data([incomingData[0]]).enter()
-    graphGroup.selectAll('path')
+    graphGroup.selectAll('.line').data([incomingData[0]], d => d.year)
       .transition()
       .attr('d', lineRandomizer)
       .attr('stroke', 'black')
