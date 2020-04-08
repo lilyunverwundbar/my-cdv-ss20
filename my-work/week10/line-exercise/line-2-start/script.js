@@ -54,8 +54,9 @@ function gotData(incomingData) {
     .y(d => yScale(d.birthsPerThousand))
 
   let lineRandomizer = d3.line()
-    .x(d => xScale(d.year))
+    .x(d => d3.randomUniform(xpadding, w - xpadding)())
     .y(d => d3.randomUniform(h - ypadding, ypadding)())
+
 
   graphGroup.selectAll('.line').data([incomingData[0]]).enter()
     .append('path')
