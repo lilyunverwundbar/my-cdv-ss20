@@ -1,4 +1,5 @@
 ### The Data Story Contextual Progress Report
+#### Digital Camera Spec Evolution Visual Database
 
 Every year, the technical specification of digital cameras get refreshed and presumably better. Or does it? By going through thousands of digital cameras ever released, the project Digicam in Specs will use their specification sheets as a lens to approach this changing industry in relation to technologies, product design choices, business, and our lifestyles.
 
