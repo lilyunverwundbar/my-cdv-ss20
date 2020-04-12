@@ -28,8 +28,12 @@ I would like to layout different properties of cameras through time to visualize
     - Dimensions
         Presumably catches differences in chunky cameras in earlier time, compact cameras, and chunky pro cameras. Shown with visual reference to the size of a mobile phone of the year.
     - Companies in/out of business
-
+    - TBC
 - Correlations
+    - Brand Product Strategy
+        Plotting product specs in planed categorized by brands.
+    - Sensor Size per body size
+        Does you get more sensor real estate with bigger / heavier body.
     Some fun correlations could be sensor size per kilogram or sensor pixel density vs. screen pixel density. 
 
 I imagine the website to have a vertical scrolling mechanism to show temporal  changes along with certain events related to some fun facts.
