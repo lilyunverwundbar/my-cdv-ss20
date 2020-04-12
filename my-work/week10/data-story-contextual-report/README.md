@@ -6,7 +6,7 @@ Every year, the technical specification of digital cameras get refreshed and pre
 ##### Context
 We are all familiar with digital cameras. Since mid-90s, they have been around as a type of consumer electronics. During the almost two decades of the industry, we have witnessed an interplay between technologies, business competitions, product designs, and our changing lifestyles, especially in the ongoing revolution of mobile photography.
 
-The scope of the projects will cover digital cameras dedicated to still phorography, including built-in lens cameras and interchangeable lens cameras. The data range from mid-90s all the way through 2020, that is, from its explorational era, through its booming phase, to today's challenging market. By analyzing the retrospective of technical specs and visualizing them from novel perspectives, we will travel through time to explore the a bigger picture and hopefully identify some critical variables in the course.
+The scope of the projects will cover digital cameras dedicated to still phorography, including built-in lens cameras and interchangeable lens cameras. The data range from mid-90s all the way through 2020, that is, from its explorational era, through its booming phase, to today's challenging market. By analyzing the retrospective of technical specs and visualizing them from novel perspectives, we will travel through time to explore the a bigger picture and hopefully identify some critical variables in the course. 
 
 #### Project Progress
 ##### Collected Data
@@ -41,5 +41,4 @@ I imagine the website to have a vertical scrolling mechanism to show temporal  c
 Now that most people take pictures with phones much more than with a dedicated camera, I would like to visualize and help the audience appreciate the retrospective of digital cameras that brought us here in the first place. And I expect the project to be educational about some basic concepts about cameras. 
 
 #### Sources
-[Digital Camera Database](https://www.digicamdb.com/)
-[Camera & Imaging Products Association](http://www.cipa.jp/index_e.html)
+[Digital Camera Database](https://www.digicamdb.com/), [Camera & Imaging Products Association](http://www.cipa.jp/index_e.html)
