@@ -10,9 +10,10 @@ const margin = {
 const width = 1000 - margin.left - margin.right;
 const height = 950 - margin.top - margin.bottom;
 
+
 d3.csv('data/camera_details.csv').then(data => {
     dataset = data;
-    console.log(dataset);
+    console.log(dataset[0]);
     setTimeout(drawInitial(), 100);
 })
 
