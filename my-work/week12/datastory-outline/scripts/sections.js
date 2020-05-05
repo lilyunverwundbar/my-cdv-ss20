@@ -11,7 +11,7 @@ const width = 1000 - margin.left - margin.right;
 const height = 950 - margin.top - margin.bottom;
 
 
-d3.csv('data/camera_details.csv').then(data => {
+d3.json('data/camera_details_cleaned_trimmed.json').then(data => {
     dataset = data;
     console.log(dataset[0]);
     setTimeout(drawInitial(), 100);
