@@ -14,13 +14,13 @@ and clearer image.
 </p>`
 
 let image_sensor_technology = ` <p>
-<span style='color:green'>CMOS <sub>(Complementary Metal–Oxide–Semiconductor)</sub></span>
-<br>
-<span style='color:skyblue'>CCD <sub>(Charge-Coupled Device)</sub></span>
+<b style='color:green'>CMOS <sub>(Complementary Metal–Oxide–Semiconductor)</sub></b>
+<p>The <span style='color:green'>CMOS</span> sensor technology is increasingly being used in today's cameras, allowing users to shoot 1080p video and apply complex imaging effects with ease.</p>
+<b style='color:skyblue'>CCD <sub>(Charge-Coupled Device)</sub></b>
 <p>Traditionally, <span style='color:skyblue'>CCD</span> sensors have been thought to produce better-looking images with less visual noise and distortion, but they draw more power and provide slower data-throughput speed.</p>
 <img src="https://meroli.web.cern.ch/img/lecture/spatial/clip_image002.jpg" width='400px'>
 <br>
-<span style='color:purple'>Foveon X3 <sub>(Sigma's Proprietary Technology)</sub></span>
+There are also cameras using <a href='https://www.sigma-global.com/en/cameras/dp-series/technology/' style='color:purple'>Foveon X3</a> , a proprietary technology from Sigma.
 
 
 </p>`
@@ -47,14 +47,16 @@ let lens_system = `  <p>
 Without doubt, more sphisticated cameras with <span style='color:#1C415A'><b>Interchangeable Lens
         System</b></span> takes a relatively professional approach, therefore, equipped with larger
 sensors for quality lens families.
-
 </p>
+<img src="https://hnsfpau.imgix.net/5/images/detailed/128/ILCE6000LB.01Main.jpg?fit=fill&bg=0FFF&w=295&h=165&auto=format,compress" width='200px'>
 <p>
 Manufacturers prefer small sensors for cameras with a <span style='color:#ED6168'><b>Built-In Lens
         System</b></span>. Besides cost saving in the low-end market, the optical system is also a
 consideration. Since smaller sensors crop out the edges and enlarge the center of the frame, the
 zoom range of a lens expands as well.
 </p>
+<img src="https://media.4rgos.it/i/Argos/3775332_R_Z001A?w=750&h=440&qlt=70" width='150px'>
+
 <p>
 For example, a light-weight zoom lens (4-20mm) on a <b>1-inch</b> sensor could covers the same range
 of a
