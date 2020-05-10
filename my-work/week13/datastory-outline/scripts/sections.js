@@ -56,7 +56,14 @@ let extents = {};
 let xScale, yScale, rScale;
 let simulation;
 
+
+
 let opt1, opt2, opt3, opt4;
+let opts = {
+    sensor_type: false,
+    lens_system: false,
+    body_form_factor: 'weight'
+};
 
 
 let scroll = scroller().container(d3.select('#graphic'));
@@ -86,11 +93,7 @@ let activationFunctions = [
     draw1,
     draw2,
     draw3,
-    draw4,
-    draw5,
-    draw6,
-    draw7,
-    draw8,
+    ending
 ]
 
 
@@ -141,7 +144,22 @@ function initStructure() {
     yScale = d3.scaleLinear().range([h - yPadding, yPadding / 2]);
     rScale = d3.scaleLinear().range([2, 16]);
 
+    d3.select('#check-sensor-type')
+        .on('change', function () {
+            opts.sensor_type = (d3.select(this).property('checked'));
+            draw1(opts.sensor_type);
+        });
 
+    d3.select('#check-lens-system')
+        .on('change', function () {
+            opts.lens_system = (d3.select(this).property('checked'));
+            draw2(opts.lens_system);
+        });
+    d3.select('#select-body-info')
+        .on('change', function () {
+            opts.body_form_factor = d3.select(this).property('value');
+            draw3(opts.body_form_factor);
+        });
 }
 
 
@@ -230,7 +248,7 @@ function initVisual() {
 
 // The Cover
 function draw0() {
-    console.log("The Cover")
+    console.log("draw 0")
     clean();
     var format = d3.format(",d");
     d3.select("#cam-number")
@@ -326,8 +344,9 @@ function draw0() {
 
 }
 
-// The Market Share Compare to Film
-function draw1() {
+// Image Sensor
+function draw1(opt) {
+    console.log('draw1')
     clean()
 
     console.log("Camera Sensor")
@@ -341,21 +360,45 @@ function draw1() {
         .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
 
     yAxisGroup.select('.y-axis-title').text('resolution (megapixels)');
-    if (lastIndex != 2) {
+
+    // if not drawing on a checkbox chage
+    if (opt != true && opt != false) {
         dataset = dataset.map(d => {
             d.x = xScale(d.year);
             d.y = yScale(d.megapixels);
             return d
         });
     }
-    graphLayer.selectAll('.datapoint')
-        .transition()
-        .attr('cx', d => d.x)
-        .attr('cy', d => d.y)
-        .attr('r', d => rScale(d.megapixels))
-        .attr('fill', d => brandColor[d.brand])
-        .duration(durationUnit);
 
+    if (!opts.sensor_type) {
+        graphLayer.selectAll('.datapoint')
+            .transition()
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+            .attr('r', d => rScale(d.megapixels))
+            .attr('fill', d => brandColor[d.brand])
+            .duration(durationUnit);
+        d3.select('#image-sensor-div').html(image_sensor_megapixels);
+    } else {
+        graphLayer.selectAll('.datapoint')
+            .transition()
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+            .attr('r', d => rScale(d.megapixels))
+            .attr('fill', d => {
+                if (d.sensor_type === 'CCD') {
+                    return "skyblue"
+                } else if (d.sensor_type === 'CMOS') {
+                    return "green"
+                } else if (d.sensor_type === 'Foveon') {
+                    return 'purple'
+                } else {
+                    return 'white'
+                }
+            })
+            .duration(durationUnit);
+        d3.select('#image-sensor-div').html(image_sensor_technology);
+    }
     simulation
         .force('forceY', d => d3.forceY(d.y))
         .force('collide', d3.forceCollide().radius(d => rScale(d.megapixels) - 0.5))
@@ -365,253 +408,142 @@ function draw1() {
     }, durationUnit * 2.0);
 }
 
-function draw2() {
+// Sensor Form Factor
+function draw2(opt) {
+    console.log('draw2')
+
     clean()
-    yScale.domain(extents.megapixels)
+    yScale.domain(extents.sensor_size);
     rScale.domain(extents.megapixels);
 
     let yAxis = d3.axisLeft(yScale);
-    yAxisGroup.transition()
-        .call(yAxis)
+    yAxisGroup.transition().call(yAxis)
+        .transition()
         .attr('opacity', 1)
         .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
-    yAxisGroup.select('.y-axis-title').text('resolution (megapixels)');
+    yAxisGroup.select('.y-axis-title').text('sensor size (mm×mm)');
 
-    if (lastIndex != 1) {
+    if (opt != true && opt != false) {
         dataset = dataset.map(d => {
             d.x = xScale(d.year);
-            d.y = yScale(d.megapixels);
+            d.y = yScale(getSensorSize(d));
             return d
-        });
-    }
-    graphLayer.selectAll('.datapoint')
-        .transition()
-        .attr('cx', d => d.x)
-        .attr('cy', d => d.y)
-        .attr('r', d => rScale(d.megapixels))
-        .attr('fill', d => {
-            if (d.sensor_type === 'CCD') {
-                return "skyblue"
-            } else if (d.sensor_type === 'CMOS') {
-                return "green"
-            } else if (d.sensor_type === 'Foveon') {
-                return 'purple'
-            } else {
-                return 'white'
-            }
         })
-        .duration(durationUnit);
+    }
+
+    if (!opts.lens_system) {
+        graphLayer.selectAll('.datapoint')
+            .transition()
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+            .attr('r', d => rScale(d.megapixels))
+            .attr('fill', d => brandColor[d.brand])
+            .duration(durationUnit)
+        d3.select('#sensor-form-factor-div').html(sensor_form_factor);
+    } else {
+        graphLayer.selectAll('.datapoint')
+            .transition()
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+            .attr('r', d => rScale(d.megapixels))
+            .attr('fill', d => d.fl ? '#ED6168' : '#1C415A')
+            .duration(durationUnit)
+        d3.select('#sensor-form-factor-div').html(lens_system);
+    }
     simulation
         .force('forceY', d => d3.forceY(d.y))
         .force('collide', d3.forceCollide().radius(d => rScale(d.megapixels) - 0.5))
+
 
     setTimeout(() => {
         simulation.restart();
     }, durationUnit * 2.0);
 
+    setTimeout(() => {
+        sensor_size_marker(864, '35mm / Full-Frame');
+        sensor_size_marker(329, 'APS-C');
+        sensor_size_marker(225, 'Four Thirds');
+        sensor_size_marker(116, '1 inch');
+        sensor_size_marker(25, '1/2.5 inch');
+    }, durationUnit)
+
+    function sensor_size_marker(size, name) {
+        additionalInfo.append('line')
+            .attr('x1', xPadding)
+            .attr('x2', xPadding)
+            .attr('y1', yScale(size))
+            .attr('y2', yScale(size))
+            .transition()
+            .attr('x2', w - xPadding)
+            .duration(durationUnit * 4)
+        additionalInfo.append('text')
+            .attr('x', xPadding)
+            .attr('y', yScale(size) - 10)
+            .attr('opacity', 0)
+            .text(name)
+            .transition()
+            .attr('opacity', 1)
+            .duration(durationUnit * 4)
+    }
 }
 
-// The Clarity of Image & Sensor Improvements
+// Body Form Factor
 function draw3() {
+    console.log('draw3')
     clean()
-    yScale.domain(extents.sensor_size);
-    let yAxis = d3.axisLeft(yScale);
-    yAxisGroup.transition().call(yAxis)
-        .transition()
-        .attr('opacity', 1)
-        .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
-    yAxisGroup.select('.y-axis-title').text('sensor size (mm×mm)');
 
-    if (lastIndex != 4) {
-        dataset = dataset.map(d => {
-            d.x = xScale(d.year);
-            d.y = yScale(getSensorSize(d));
-            return d
-        })
-    }
-    graphLayer.selectAll('.datapoint')
-        .transition()
-        .attr('cx', d => d.x)
-        .attr('cy', d => d.y)
-        .attr('r', d => rScale(d.megapixels))
-        .attr('fill', d => brandColor[d.brand])
-        .duration(durationUnit)
-    simulation
-        .force('forceY', d => d3.forceY(d.y))
-        .force('collide', d3.forceCollide().radius(d => rScale(d.megapixels) - 0.5))
-
-
-    setTimeout(() => {
-        simulation.restart();
-    }, durationUnit * 2.0);
-
-    setTimeout(() => {
-        sensor_size_marker(864, '35mm / Full-Frame');
-        sensor_size_marker(329, 'APS-C');
-        sensor_size_marker(225, 'Four Thirds');
-        sensor_size_marker(116, '1 inch');
-        sensor_size_marker(25, '1/2.5 inch');
-    }, durationUnit)
-
-    function sensor_size_marker(size, name) {
-        additionalInfo.append('line')
-            .attr('x1', xPadding)
-            .attr('x2', xPadding)
-            .attr('y1', yScale(size))
-            .attr('y2', yScale(size))
-            .transition()
-            .attr('x2', w - xPadding)
-            .duration(durationUnit * 4)
-        additionalInfo.append('text')
-            .attr('x', xPadding)
-            .attr('y', yScale(size) - 10)
-            .attr('opacity', 0)
-            .text(name)
-            .transition()
-            .attr('opacity', 1)
-            .duration(durationUnit * 4)
-    }
-}
-
-// A Visual Catelog of All Released Camaras
-
-
-// A 3D View of Body/Sensor Ratio
-function draw4() {
-    clean()
-    yScale.domain(extents.sensor_size);
-    rScale.domain(extents.megapixels);
-
-    let yAxis = d3.axisLeft(yScale);
-    yAxisGroup.transition().call(yAxis)
-        .transition()
-        .attr('opacity', 1)
-        .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
-    yAxisGroup.select('.y-axis-title').text('sensor size (mm×mm)');
-
-
-    if (lastIndex != 3) {
-        dataset = dataset.map(d => {
-            d.x = xScale(d.year);
-            d.y = yScale(getSensorSize(d));
-            return d
-        })
-    }
-    graphLayer.selectAll('.datapoint')
-        .transition()
-        .attr('cx', d => d.x)
-        .attr('cy', d => d.y)
-        .attr('r', d => rScale(d.megapixels))
-        .attr('fill', d => d.fl ? '#ED6168' : '#1C415A')
-        .duration(durationUnit)
-    simulation
-        .force('forceY', d => d3.forceY(d.y))
-        .force('collide', d3.forceCollide().radius(d => rScale(d.megapixels) - 0.5))
-
-
-    setTimeout(() => {
-        simulation.restart();
-    }, durationUnit * 2.0);
-
-    setTimeout(() => {
-        sensor_size_marker(864, '35mm / Full-Frame');
-        sensor_size_marker(329, 'APS-C');
-        sensor_size_marker(225, 'Four Thirds');
-        sensor_size_marker(116, '1 inch');
-        sensor_size_marker(25, '1/2.5 inch');
-    }, durationUnit)
-
-    function sensor_size_marker(size, name) {
-        additionalInfo.append('line')
-            .attr('x1', xPadding)
-            .attr('x2', xPadding)
-            .attr('y1', yScale(size))
-            .attr('y2', yScale(size))
-            .transition()
-            .attr('x2', w - xPadding)
-            .duration(durationUnit * 4)
-        additionalInfo.append('text')
-            .attr('x', xPadding)
-            .attr('y', yScale(size) - 10)
-            .attr('opacity', 0)
-            .text(name)
-            .transition()
-            .attr('opacity', 1)
-            .duration(durationUnit * 4)
-    }
-}
-
-function draw5() {
-    clean()
-    yScale.domain(extents.weight);
-    rScale.domain(extents.weight);
-
-    let yAxis = d3.axisLeft(yScale);
-    yAxisGroup.transition().call(yAxis)
-        .transition()
-        .attr('opacity', 1)
-        .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
-    yAxisGroup.select('.y-axis-title').text('weight (gram)');
-
-
-    if (lastIndex) {
+    if (opts.body_form_factor == 'weight') {
+        yScale.domain(extents.weight);
+        rScale.domain(extents.weight);
         dataset = dataset.map(d => {
             d.x = xScale(d.year);
             d.y = yScale(d.weight);
+            if (isNaN(d.y)) d.y = 0;
             return d
         })
-    }
-    graphLayer.selectAll('.datapoint')
-        .transition()
-        .attr('cx', d => d.x)
-        .attr('cy', d => d.y)
-        .attr('r', d => rScale(d.weight))
-        .attr('fill', d => d.fl ? '#ED6168' : '#1C415A')
-        .duration(durationUnit)
-    simulation
-        .force('forceY', d => d3.forceY(d.y))
-        .force('collide', d3.forceCollide().radius(d => rScale(d.weight) - 0.5))
-
-
-    setTimeout(() => {
-        simulation.restart();
-    }, durationUnit * 2.0);
-
-
-
-}
-
-function draw6() {
-    clean()
-    yScale.domain(extents.body_size);
-    rScale.domain(extents.body_size);
-
-    let yAxis = d3.axisLeft(yScale);
-    yAxisGroup.transition().call(yAxis)
-        .transition()
-        .attr('opacity', 1)
-        .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
-    yAxisGroup.select('.y-axis-title').text('body size (litre)');
-
-
-    if (lastIndex) {
+        graphLayer.selectAll('.datapoint')
+            .transition()
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+            .attr('r', d => rScale(d.weight))
+            .attr('fill', d => d.fl ? '#ED6168' : '#1C415A')
+            .duration(durationUnit)
+        d3.select('#body-form-factor-div').html(body_weight);
+        let yAxis = d3.axisLeft(yScale);
+        yAxisGroup.transition().call(yAxis)
+            .transition()
+            .attr('opacity', 1)
+            .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
+        yAxisGroup.select('.y-axis-title').text('weight (gram)');
+        simulation
+            .force('forceY', d => d3.forceY(d.y))
+            .force('collide', d3.forceCollide().radius(d => rScale(d.weight) - 0.5))
+    } else if (opts.body_form_factor == 'size') {
+        yScale.domain(extents.body_size);
+        rScale.domain(extents.body_size);
         dataset = dataset.map(d => {
             d.x = xScale(d.year);
             d.y = yScale(getBodySize(d));
             return d
         })
+        graphLayer.selectAll('.datapoint')
+            .transition()
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+            .attr('r', d => rScale(getBodySize(d)))
+            .attr('fill', d => d.fl ? '#ED6168' : '#1C415A')
+            .duration(durationUnit)
+        d3.select('#body-form-factor-div').html(body_size);
+        let yAxis = d3.axisLeft(yScale);
+        yAxisGroup.transition().call(yAxis)
+            .transition()
+            .attr('opacity', 1)
+            .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
+        yAxisGroup.select('.y-axis-title').text('body size (litre)');
+        simulation
+            .force('forceY', d => d3.forceY(d.y))
+            .force('collide', d3.forceCollide().radius(d => rScale(getBodySize(d)) - 0.5))
     }
-    graphLayer.selectAll('.datapoint')
-        .transition()
-        .attr('cx', d => d.x)
-        .attr('cy', d => d.y)
-        .attr('r', d => rScale(getBodySize(d)))
-        .attr('fill', d => d.fl ? '#ED6168' : '#1C415A')
-        .duration(durationUnit)
-    simulation
-        .force('forceY', d => d3.forceY(d.y))
-        .force('collide', d3.forceCollide().radius(d => rScale(getBodySize(d)) - 0.5))
-
 
     setTimeout(() => {
         simulation.restart();
@@ -619,79 +551,6 @@ function draw6() {
 
 }
 
-function draw7() {
-    clean()
-    yScale.domain(extents.body_size);
-    rScale.domain(extents.body_size);
-
-    let yAxis = d3.axisLeft(yScale);
-    yAxisGroup.transition().call(yAxis)
-        .transition()
-        .attr('opacity', 1)
-        .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
-    yAxisGroup.select('.y-axis-title').text('body size (litre)');
-
-
-    if (lastIndex) {
-        dataset = dataset.map(d => {
-            d.x = xScale(d.year);
-            d.y = yScale(getBodySize(d));
-            return d
-        })
-    }
-    graphLayer.selectAll('.datapoint')
-        .transition()
-        .attr('cx', d => d.x)
-        .attr('cy', d => d.y)
-        .attr('r', d => rScale(getBodySize(d)))
-        .attr('fill', d => d.fl ? '#ED6168' : '#1C415A')
-        .duration(durationUnit)
-    simulation
-        .force('forceY', d => d3.forceY(d.y))
-        .force('collide', d3.forceCollide().radius(d => rScale(getBodySize(d)) - 0.5))
-
-
-    setTimeout(() => {
-        simulation.restart();
-    }, durationUnit * 2.0);
-}
-
-function draw8() {
-    clean()
-    yScale.domain(extents.body_size);
-    rScale.domain(extents.body_size);
-
-    let yAxis = d3.axisLeft(yScale);
-    yAxisGroup.transition().call(yAxis)
-        .transition()
-        .attr('opacity', 1)
-        .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
-    yAxisGroup.select('.y-axis-title').text('body size (litre)');
-
-
-    if (lastIndex) {
-        dataset = dataset.map(d => {
-            d.x = xScale(d.year);
-            d.y = yScale(getBodySize(d));
-            return d
-        })
-    }
-    graphLayer.selectAll('.datapoint')
-        .transition()
-        .attr('cx', d => d.x)
-        .attr('cy', d => d.y)
-        .attr('r', d => rScale(getBodySize(d)))
-        .attr('fill', d => d.fl ? '#ED6168' : '#1C415A')
-        .duration(durationUnit)
-    simulation
-        .force('forceY', d => d3.forceY(d.y))
-        .force('collide', d3.forceCollide().radius(d => rScale(getBodySize(d)) - 0.5))
-
-
-    setTimeout(() => {
-        simulation.restart();
-    }, durationUnit * 2.0);
-}
 
 function clean(lastState) {
     simulation.stop();
@@ -726,6 +585,10 @@ function clean(lastState) {
 
 }
 
+
+function ending() {
+
+}
 
 function getSensorSize(d, i) {
     return d.sensor_size[0] * d.sensor_size[1];

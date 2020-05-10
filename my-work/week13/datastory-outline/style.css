@@ -11,28 +11,35 @@ body {
     width: 500px;
     top: 60px;
     margin-right: 50px;
+    z-index: 50;
+
 }
 
 .categoryLegend {
     font-family: "Open Sans";
 }
 
+.custom-select {
+    font-size: 14pt;
+    font-family: "Open Sans";
+    width: 100%;
+}
 
-select {
-    z-index: 150;
+.check-box-p {
+    text-align: right;
 }
 
 .step {
-    margin-bottom: 100px;
+    margin-top: 100px;
     margin-left: 50px;
+
     height: 700px;
     font-family: "Open Sans";
     font-weight: 400;
     line-height: 1.4em;
-    z-index: 76;
 
-    /* box-shadow: -3px 3px 15px #939393; */
-    /* background-color: rgba(255, 255, 255, .9); */
+    /* box-shadow: -3px 3px 15px #939393;
+    background-color: rgba(255, 255, 255, .5); */
 
     /* text-align: justify; */
     /* display: flex;
@@ -57,9 +64,6 @@ p {
 }
 
 
-strong {
-    /* color: rgb(255, 155, 155); */
-}
 
 #graphic {
     margin: auto;
@@ -79,7 +83,12 @@ strong {
     height: 100%;
     width: 100%;
     font-family: "Open Sans";
+    pointer-events: none;
 
+}
+
+.graph-layer {
+    pointer-events: all;
 }
 
 .tick line {
@@ -104,27 +113,27 @@ strong {
     z-index: 100;
 }
 
+select {
+    font-family: "Open Sans";
+
+    font-size: medium;
+    font-weight: bold;
+}
+
+b {
+    font-weight: bolder;
+}
+
 
 svg circle:hover {
     cursor: pointer;
+
 }
 
 svg rect:hover {
     cursor: pointer;
 }
 
-.swatch {
-    fill: #939393;
-}
-
-.sizeLegend2 {
-    opacity: 0.7
-}
-
-a {
-    color: rgb(221, 0, 255);
-    text-decoration: none;
-}
 
 .axis-layer text {
     font-family: "Merriweather";
