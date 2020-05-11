@@ -95,7 +95,8 @@ let activationFunctions = [
     draw1,
     draw2,
     draw3,
-    ending
+    ending,
+    () => {}
 ]
 
 
@@ -522,6 +523,7 @@ function draw2(opt) {
 function draw3() {
     console.log('draw3')
     clean()
+
     if (opts.body_comparison === 'nothing') {
         d3.select('#body-form-factor-div-2').html('');
 
@@ -532,46 +534,25 @@ function draw3() {
                 d.x = xScale(d.year);
                 d.y = yScale(d.weight);
                 if (isNaN(d.y)) d.y = 0;
+                d.r = rScale(d.weight);
+                d.color = brandColor[d.brand];
                 return d
             })
-            graphLayer.selectAll('.datapoint')
-                .transition()
-                .attr('cx', d => d.x)
-                .attr('cy', d => d.y)
-                .attr('r', d => rScale(d.weight))
-                .attr('fill', d => brandColor[d.brand])
-                .duration(durationUnit)
             d3.select('#body-form-factor-div').html(body_weight);
-            let yAxis = d3.axisLeft(yScale);
-            yAxisGroup.transition().call(yAxis)
-                .transition()
-                .attr('opacity', 1)
-                .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
+
             yAxisGroup.select('.y-axis-title').text('weight (gram)');
-            simulation
-                .force('forceY', d => d3.forceY(d.y))
-                .force('collide', d3.forceCollide().radius(d => rScale(d.weight) - 0.5))
+
         } else if (opts.body_form_factor == 'size') {
             yScale.domain(extents.body_size);
             rScale.domain(extents.body_size);
             dataset = dataset.map(d => {
                 d.x = xScale(d.year);
                 d.y = yScale(getBodySize(d));
+                d.r = rScale(getBodySize(d));
+                d.color = brandColor[d.brand];
                 return d
             })
-            graphLayer.selectAll('.datapoint')
-                .transition()
-                .attr('cx', d => d.x)
-                .attr('cy', d => d.y)
-                .attr('r', d => rScale(getBodySize(d)))
-                .attr('fill', d => brandColor[d.brand])
-                .duration(durationUnit)
             d3.select('#body-form-factor-div').html(body_size);
-            let yAxis = d3.axisLeft(yScale);
-            yAxisGroup.transition().call(yAxis)
-                .transition()
-                .attr('opacity', 1)
-                .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
             yAxisGroup.select('.y-axis-title').text('body size (litre)');
             simulation
                 .force('forceY', d => d3.forceY(d.y))
@@ -587,25 +568,13 @@ function draw3() {
                 d.x = xScale(d.year);
                 d.y = yScale(getSensorSizePerWeight(d));
                 if (isNaN(d.y)) d.y = 0;
+                d.r = rScale(getSensorSizePerWeight(d));
+                d.color = brandColor[d.brand];
                 return d
             })
-            graphLayer.selectAll('.datapoint')
-                .transition()
-                .attr('cx', d => d.x)
-                .attr('cy', d => d.y)
-                .attr('r', d => rScale(getSensorSizePerWeight(d)))
-                .attr('fill', d => brandColor[d.brand])
-                .duration(durationUnit)
             d3.select('#body-form-factor-div').html(body_weight);
-            let yAxis = d3.axisLeft(yScale);
-            yAxisGroup.transition().call(yAxis)
-                .transition()
-                .attr('opacity', 1)
-                .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
+
             yAxisGroup.select('.y-axis-title').text('sensor size / weight (mm² / gram)');
-            simulation
-                .force('forceY', d => d3.forceY(d.y))
-                .force('collide', d3.forceCollide().radius(d => rScale(getSensorSizePerWeight(d)) - 0.5))
 
         } else if (opts.body_form_factor == 'size') {
             yScale.domain(extents.sensor_size_per_body_size);
@@ -614,26 +583,13 @@ function draw3() {
                 d.x = xScale(d.year);
                 d.y = yScale(getSensorSizePerBodySize(d));
                 if (isNaN(d.y)) d.y = 0;
-
+                d.r = rScale(getSensorSizePerBodySize(d));
+                d.color = brandColor[d.brand];
                 return d
             })
-            graphLayer.selectAll('.datapoint')
-                .transition()
-                .attr('cx', d => d.x)
-                .attr('cy', d => d.y)
-                .attr('r', d => rScale(getSensorSizePerBodySize(d)))
-                .attr('fill', d => brandColor[d.brand])
-                .duration(durationUnit)
             d3.select('#body-form-factor-div').html(body_size);
-            let yAxis = d3.axisLeft(yScale);
-            yAxisGroup.transition().call(yAxis)
-                .transition()
-                .attr('opacity', 1)
-                .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
+
             yAxisGroup.select('.y-axis-title').text('sensor size / body size (mm² / litre)');
-            simulation
-                .force('forceY', d => d3.forceY(d.y))
-                .force('collide', d3.forceCollide().radius(d => rScale(getSensorSizePerBodySize(d)) - 0.5))
         }
     } else if (opts.body_comparison === 'megapixels') {
         if (opts.body_form_factor === 'weight') {
@@ -643,25 +599,12 @@ function draw3() {
                 d.x = xScale(d.year);
                 d.y = yScale(getMegapixelsPerWeight(d));
                 if (isNaN(d.y)) d.y = 0;
+                d.r = rScale(getMegapixelsPerWeight(d));
+                d.color = brandColor[d.brand];
                 return d
             })
-            graphLayer.selectAll('.datapoint')
-                .transition()
-                .attr('cx', d => d.x)
-                .attr('cy', d => d.y)
-                .attr('r', d => rScale(getMegapixelsPerWeight(d)))
-                .attr('fill', d => brandColor[d.brand])
-                .duration(durationUnit)
             d3.select('#body-form-factor-div').html(body_weight);
-            let yAxis = d3.axisLeft(yScale);
-            yAxisGroup.transition().call(yAxis)
-                .transition()
-                .attr('opacity', 1)
-                .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
-            yAxisGroup.select('.y-axis-title').text('resolution / weight (megapixels / gram)');
-            simulation
-                .force('forceY', d => d3.forceY(d.y))
-                .force('collide', d3.forceCollide().radius(d => rScale(getMegapixelsPerWeight(d)) - 0.5))
+            yAxisGroup.select('.y-axis-title').text('resolution / weight (megapixel / gram)');
 
         } else if (opts.body_form_factor == 'size') {
             yScale.domain(extents.megapixels_per_body_size);
@@ -670,28 +613,26 @@ function draw3() {
                 d.x = xScale(d.year);
                 d.y = yScale(getMegapixelsPerBodySize(d));
                 if (isNaN(d.y)) d.y = 0;
-
+                d.r = rScale(getMegapixelsPerBodySize(d));
+                d.color = brandColor[d.brand];
                 return d
             })
-            graphLayer.selectAll('.datapoint')
-                .transition()
-                .attr('cx', d => d.x)
-                .attr('cy', d => d.y)
-                .attr('r', d => rScale(getMegapixelsPerBodySize(d)))
-                .attr('fill', d => brandColor[d.brand])
-                .duration(durationUnit)
+
             d3.select('#body-form-factor-div').html(body_size);
-            let yAxis = d3.axisLeft(yScale);
-            yAxisGroup.transition().call(yAxis)
-                .transition()
-                .attr('opacity', 1)
-                .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
-            yAxisGroup.select('.y-axis-title').text('sensor size / body size (mm² / litre)');
-            simulation
-                .force('forceY', d => d3.forceY(d.y))
-                .force('collide', d3.forceCollide().radius(d => rScale(getMegapixelsPerBodySize(d)) - 0.5))
+
+            yAxisGroup.select('.y-axis-title').text('resolution / body size (megapixel / litre)');
+
         }
     }
+    visualizeDatapoints();
+    let yAxis = d3.axisLeft(yScale);
+    yAxisGroup.transition().call(yAxis)
+        .transition()
+        .attr('opacity', 1)
+        .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
+    simulation
+        .force('forceY', d => d3.forceY(d.y))
+        .force('collide', d3.forceCollide().radius(d => d.r - 0.5))
 
     setTimeout(() => {
         simulation.restart();
@@ -733,10 +674,12 @@ let yAxisTitles = {
     highest_iso: 'highest iso',
     lowest_iso: 'lowest iso',
     min_shutter: 'slowest shutter speed (s)',
-    max_shutter: 'fastest shutter speed (1/s)'
+    max_shutter: 'fastest shutter speed (1/s)',
 }
 
 function ending(opt) {
+    if (lastIndex === 5) return;
+
     clean();
     // scales
     let extent = extents[opts.vis_end];
@@ -824,11 +767,7 @@ function ending(opt) {
             .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
     }
 
-
-
-
     visualizeDatapoints();
-
 
     simulation
         .force('forceY', d => d3.forceY(d.y))
