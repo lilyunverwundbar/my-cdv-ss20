@@ -77,3 +77,9 @@ let body_size = `<p>
 Similarly, we see the body dimensions have shrinked over time, a little more drastically than the
 weight decrease.
 </p>`
+
+
+let sensor_size_per_body_size = `<p>
+
+
+`

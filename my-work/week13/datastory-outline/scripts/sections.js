@@ -58,11 +58,13 @@ let simulation;
 
 
 
-let opt1, opt2, opt3, opt4;
 let opts = {
     sensor_type: false,
     lens_system: false,
-    body_form_factor: 'weight'
+    body_form_factor: 'weight',
+    body_comparison: 'nothing',
+    vis_end: 'nothing',
+    color_end: 'brand'
 };
 
 
@@ -137,6 +139,19 @@ function initStructure() {
     extents.sensor_size = d3.extent(dataset, getSensorSize);
     extents.weight = d3.extent(dataset, d => d.weight);
     extents.body_size = d3.extent(dataset, getBodySize);
+    extents.megapixels_per_body_size = d3.extent(dataset, getMegapixelsPerBodySize);
+    extents.megapixels_per_weight = d3.extent(dataset, getMegapixelsPerWeight);
+    extents.sensor_size_per_body_size = d3.extent(dataset, getSensorSizePerBodySize);
+    extents.sensor_size_per_weight = d3.extent(dataset, getSensorSizePerWeight);
+    extents.scr_res = d3.extent(dataset, d => d.scr_res);
+    extents.scr_size = d3.extent(dataset, d => d.scr_size);
+    extents.high_iso = d3.extent(dataset, d => getHighISO(d));
+    extents.low_iso = d3.extent(dataset, d => getLowISO(d));
+    extents.min_shutter = d3.extent(dataset, d => d.min_shutter);
+    extents.max_shutter = d3.extent(dataset, d => d.max_shutter);
+
+
+
 
 
     //init scale
@@ -158,8 +173,24 @@ function initStructure() {
     d3.select('#select-body-info')
         .on('change', function () {
             opts.body_form_factor = d3.select(this).property('value');
-            draw3(opts.body_form_factor);
+            draw3();
         });
+    d3.select('#select-body-info-comparison')
+        .on('change', function () {
+            opts.body_comparison = d3.select(this).property('value');
+            draw3();
+        });
+    d3.select('#select-vis-end')
+        .on('change', function () {
+            opts.vis_end = d3.select(this).property('value');
+            ending();
+        });
+    d3.select('#select-color-end')
+        .on('change', function () {
+            opts.color_end = d3.select(this).property('value');
+            ending('color-only');
+        });
+
 }
 
 
@@ -172,6 +203,8 @@ function initVisual() {
     dataset = dataset.map(d => {
         d.x = xScale(d.year);
         d.y = h / 2;
+        d.r = rScale(d.megapixels);
+        d.color = brandColor[d.brand];
         return d
     })
 
@@ -190,8 +223,8 @@ function initVisual() {
         .attr('class', 'datapoint')
         .attr('cx', d => d.x)
         .attr('cy', d => d.y)
-        .attr('r', d => rScale(d.megapixels))
-        .attr('fill', d => brandColor[d.brand])
+        .attr('r', d => d.r)
+        .attr('fill', d => d.color)
         .attr('opacity', 0.7)
 
 
@@ -315,25 +348,23 @@ function draw0() {
                 .delay(1500)
                 .on("start", repeat);
         });
+
+    yScale.domain(extents.megapixels);
+    rScale.domain(extents.megapixels);
+
     dataset = dataset.map(d => {
         d.x = xScale(d.year);
         d.y = h / 2;
+        d.r = rScale(d.megapixels);
+        d.color = brandColor[d.brand];
         return d
     })
+    visualizeDatapoints();
 
     yAxisGroup
         .transition()
         .attr('transform', 'translate(' + (w + xPadding / 2) + ', 0)')
         .attr('opacity', 0)
-
-    viz.selectAll('.datapoint')
-        .transition()
-        .duration(durationUnit)
-        .attr("cx", d => d.x)
-        .attr("cy", d => d.y)
-        .attr('r', d => rScale(d.megapixels))
-        .attr('fill', d => brandColor[d.brand])
-
 
     simulation
         .force('forceY', d => d3.forceY(h / 2))
@@ -421,7 +452,7 @@ function draw2(opt) {
         .transition()
         .attr('opacity', 1)
         .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
-    yAxisGroup.select('.y-axis-title').text('sensor size (mm×mm)');
+    yAxisGroup.select('.y-axis-title').text('sensor size (mm²)');
 
     if (opt != true && opt != false) {
         dataset = dataset.map(d => {
@@ -491,58 +522,175 @@ function draw2(opt) {
 function draw3() {
     console.log('draw3')
     clean()
+    if (opts.body_comparison === 'nothing') {
+        d3.select('#body-form-factor-div-2').html('');
 
-    if (opts.body_form_factor == 'weight') {
-        yScale.domain(extents.weight);
-        rScale.domain(extents.weight);
-        dataset = dataset.map(d => {
-            d.x = xScale(d.year);
-            d.y = yScale(d.weight);
-            if (isNaN(d.y)) d.y = 0;
-            return d
-        })
-        graphLayer.selectAll('.datapoint')
-            .transition()
-            .attr('cx', d => d.x)
-            .attr('cy', d => d.y)
-            .attr('r', d => rScale(d.weight))
-            .attr('fill', d => d.fl ? '#ED6168' : '#1C415A')
-            .duration(durationUnit)
-        d3.select('#body-form-factor-div').html(body_weight);
-        let yAxis = d3.axisLeft(yScale);
-        yAxisGroup.transition().call(yAxis)
-            .transition()
-            .attr('opacity', 1)
-            .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
-        yAxisGroup.select('.y-axis-title').text('weight (gram)');
-        simulation
-            .force('forceY', d => d3.forceY(d.y))
-            .force('collide', d3.forceCollide().radius(d => rScale(d.weight) - 0.5))
-    } else if (opts.body_form_factor == 'size') {
-        yScale.domain(extents.body_size);
-        rScale.domain(extents.body_size);
-        dataset = dataset.map(d => {
-            d.x = xScale(d.year);
-            d.y = yScale(getBodySize(d));
-            return d
-        })
-        graphLayer.selectAll('.datapoint')
-            .transition()
-            .attr('cx', d => d.x)
-            .attr('cy', d => d.y)
-            .attr('r', d => rScale(getBodySize(d)))
-            .attr('fill', d => d.fl ? '#ED6168' : '#1C415A')
-            .duration(durationUnit)
-        d3.select('#body-form-factor-div').html(body_size);
-        let yAxis = d3.axisLeft(yScale);
-        yAxisGroup.transition().call(yAxis)
-            .transition()
-            .attr('opacity', 1)
-            .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
-        yAxisGroup.select('.y-axis-title').text('body size (litre)');
-        simulation
-            .force('forceY', d => d3.forceY(d.y))
-            .force('collide', d3.forceCollide().radius(d => rScale(getBodySize(d)) - 0.5))
+        if (opts.body_form_factor === 'weight') {
+            yScale.domain(extents.weight);
+            rScale.domain(extents.weight);
+            dataset = dataset.map(d => {
+                d.x = xScale(d.year);
+                d.y = yScale(d.weight);
+                if (isNaN(d.y)) d.y = 0;
+                return d
+            })
+            graphLayer.selectAll('.datapoint')
+                .transition()
+                .attr('cx', d => d.x)
+                .attr('cy', d => d.y)
+                .attr('r', d => rScale(d.weight))
+                .attr('fill', d => brandColor[d.brand])
+                .duration(durationUnit)
+            d3.select('#body-form-factor-div').html(body_weight);
+            let yAxis = d3.axisLeft(yScale);
+            yAxisGroup.transition().call(yAxis)
+                .transition()
+                .attr('opacity', 1)
+                .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
+            yAxisGroup.select('.y-axis-title').text('weight (gram)');
+            simulation
+                .force('forceY', d => d3.forceY(d.y))
+                .force('collide', d3.forceCollide().radius(d => rScale(d.weight) - 0.5))
+        } else if (opts.body_form_factor == 'size') {
+            yScale.domain(extents.body_size);
+            rScale.domain(extents.body_size);
+            dataset = dataset.map(d => {
+                d.x = xScale(d.year);
+                d.y = yScale(getBodySize(d));
+                return d
+            })
+            graphLayer.selectAll('.datapoint')
+                .transition()
+                .attr('cx', d => d.x)
+                .attr('cy', d => d.y)
+                .attr('r', d => rScale(getBodySize(d)))
+                .attr('fill', d => brandColor[d.brand])
+                .duration(durationUnit)
+            d3.select('#body-form-factor-div').html(body_size);
+            let yAxis = d3.axisLeft(yScale);
+            yAxisGroup.transition().call(yAxis)
+                .transition()
+                .attr('opacity', 1)
+                .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
+            yAxisGroup.select('.y-axis-title').text('body size (litre)');
+            simulation
+                .force('forceY', d => d3.forceY(d.y))
+                .force('collide', d3.forceCollide().radius(d => rScale(getBodySize(d)) - 0.5))
+        }
+    } else if (opts.body_comparison === 'sensor_size') {
+        d3.select('#body-form-factor-div-2').html(sensor_size_per_body_size);
+
+        if (opts.body_form_factor === 'weight') {
+            yScale.domain(extents.sensor_size_per_weight);
+            rScale.domain(extents.sensor_size_per_weight);
+            dataset = dataset.map(d => {
+                d.x = xScale(d.year);
+                d.y = yScale(getSensorSizePerWeight(d));
+                if (isNaN(d.y)) d.y = 0;
+                return d
+            })
+            graphLayer.selectAll('.datapoint')
+                .transition()
+                .attr('cx', d => d.x)
+                .attr('cy', d => d.y)
+                .attr('r', d => rScale(getSensorSizePerWeight(d)))
+                .attr('fill', d => brandColor[d.brand])
+                .duration(durationUnit)
+            d3.select('#body-form-factor-div').html(body_weight);
+            let yAxis = d3.axisLeft(yScale);
+            yAxisGroup.transition().call(yAxis)
+                .transition()
+                .attr('opacity', 1)
+                .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
+            yAxisGroup.select('.y-axis-title').text('sensor size / weight (mm² / gram)');
+            simulation
+                .force('forceY', d => d3.forceY(d.y))
+                .force('collide', d3.forceCollide().radius(d => rScale(getSensorSizePerWeight(d)) - 0.5))
+
+        } else if (opts.body_form_factor == 'size') {
+            yScale.domain(extents.sensor_size_per_body_size);
+            rScale.domain(extents.sensor_size_per_body_size);
+            dataset = dataset.map(d => {
+                d.x = xScale(d.year);
+                d.y = yScale(getSensorSizePerBodySize(d));
+                if (isNaN(d.y)) d.y = 0;
+
+                return d
+            })
+            graphLayer.selectAll('.datapoint')
+                .transition()
+                .attr('cx', d => d.x)
+                .attr('cy', d => d.y)
+                .attr('r', d => rScale(getSensorSizePerBodySize(d)))
+                .attr('fill', d => brandColor[d.brand])
+                .duration(durationUnit)
+            d3.select('#body-form-factor-div').html(body_size);
+            let yAxis = d3.axisLeft(yScale);
+            yAxisGroup.transition().call(yAxis)
+                .transition()
+                .attr('opacity', 1)
+                .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
+            yAxisGroup.select('.y-axis-title').text('sensor size / body size (mm² / litre)');
+            simulation
+                .force('forceY', d => d3.forceY(d.y))
+                .force('collide', d3.forceCollide().radius(d => rScale(getSensorSizePerBodySize(d)) - 0.5))
+        }
+    } else if (opts.body_comparison === 'megapixels') {
+        if (opts.body_form_factor === 'weight') {
+            yScale.domain(extents.megapixels_per_weight);
+            rScale.domain(extents.megapixels_per_weight);
+            dataset = dataset.map(d => {
+                d.x = xScale(d.year);
+                d.y = yScale(getMegapixelsPerWeight(d));
+                if (isNaN(d.y)) d.y = 0;
+                return d
+            })
+            graphLayer.selectAll('.datapoint')
+                .transition()
+                .attr('cx', d => d.x)
+                .attr('cy', d => d.y)
+                .attr('r', d => rScale(getMegapixelsPerWeight(d)))
+                .attr('fill', d => brandColor[d.brand])
+                .duration(durationUnit)
+            d3.select('#body-form-factor-div').html(body_weight);
+            let yAxis = d3.axisLeft(yScale);
+            yAxisGroup.transition().call(yAxis)
+                .transition()
+                .attr('opacity', 1)
+                .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
+            yAxisGroup.select('.y-axis-title').text('resolution / weight (megapixels / gram)');
+            simulation
+                .force('forceY', d => d3.forceY(d.y))
+                .force('collide', d3.forceCollide().radius(d => rScale(getMegapixelsPerWeight(d)) - 0.5))
+
+        } else if (opts.body_form_factor == 'size') {
+            yScale.domain(extents.megapixels_per_body_size);
+            rScale.domain(extents.megapixels_per_body_size);
+            dataset = dataset.map(d => {
+                d.x = xScale(d.year);
+                d.y = yScale(getMegapixelsPerBodySize(d));
+                if (isNaN(d.y)) d.y = 0;
+
+                return d
+            })
+            graphLayer.selectAll('.datapoint')
+                .transition()
+                .attr('cx', d => d.x)
+                .attr('cy', d => d.y)
+                .attr('r', d => rScale(getMegapixelsPerBodySize(d)))
+                .attr('fill', d => brandColor[d.brand])
+                .duration(durationUnit)
+            d3.select('#body-form-factor-div').html(body_size);
+            let yAxis = d3.axisLeft(yScale);
+            yAxisGroup.transition().call(yAxis)
+                .transition()
+                .attr('opacity', 1)
+                .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
+            yAxisGroup.select('.y-axis-title').text('sensor size / body size (mm² / litre)');
+            simulation
+                .force('forceY', d => d3.forceY(d.y))
+                .force('collide', d3.forceCollide().radius(d => rScale(getMegapixelsPerBodySize(d)) - 0.5))
+        }
     }
 
     setTimeout(() => {
@@ -572,22 +720,124 @@ function clean(lastState) {
     d3.select("#start-year").text('0')
     d3.select("#end-year").text('9999')
     d3.select("#company-number").text('0')
-
-
-
-    // .delay(durationUnit * 0.5)
-    // .attr('opacity', 1);
-
-
-    // .duration(durationUnit * 0.5)
-    // .delay(durationUnit * 0.5)
-    // .attr('opacity', 1);
-
 }
 
+let yAxisTitles = {
+    nothing: '',
+    megapixels: 'resolution (megapixels)',
+    sensor_size: 'sensor size (mm²)',
+    weight: 'weight (gram)',
+    body_size: 'body size (litre)',
+    scr_res: 'screen resolution (dot)',
+    scr_size: 'screen size (inch)',
+    highest_iso: 'highest iso',
+    lowest_iso: 'lowest iso',
+    min_shutter: 'slowest shutter speed (s)',
+    max_shutter: 'fastest shutter speed (1/s)'
+}
 
-function ending() {
+function ending(opt) {
+    clean();
+    // scales
+    let extent = extents[opts.vis_end];
+    if (!extent) extent = extents.megapixels;
+    yScale.domain(extent);
+    rScale.domain(extent);
+    yAxisGroup.select('.y-axis-title').text(yAxisTitles[opts.vis_end]);
 
+    dataset = dataset.map(d => {
+        if (opt != 'color-only') {
+            d.x = xScale(d.year);
+            let dy_ref;
+            switch (opts.vis_end) {
+                case 'nothing':
+                    dy_ref = (extent[0] + extent[1]) / 2
+                    break;
+                case 'sensor_size':
+                    dy_ref = getSensorSize(d);
+                    break;
+                case 'body_size':
+                    dy_ref = getBodySize(d);
+                    break;
+                case 'high_iso':
+                    dy_ref = getHighISO(d);
+                    break;
+                case 'low_iso':
+                    dy_ref = getLowISO(d);
+                    break;
+                default:
+                    dy_ref = d[opts.vis_end];
+            }
+            d.y = yScale(dy_ref);
+            if (isNaN(d.y)) d.y = 0;
+            d.r = rScale(dy_ref);
+            if (opts.vis_end === 'nothing') d.r = rScale(d.megapixels);
+            else if (opts.vis_end === 'scr_size') d.r *= 0.4;
+        }
+        switch (opts.color_end) {
+            case 'brand':
+                d.color = brandColor[d.brand];
+                break;
+            case 'battery':
+                d.color = d[opts.color_end] === 'Li-ion' ? "green" : 'grey';
+                break;
+            case 'usb':
+                if (d.usb == 3)
+                    d.color = 'blue'
+                else if (d.usb == 2)
+                    d.color = 'green'
+                else if (d.usb == 1)
+                    d.color = 'red'
+                else
+                    d.color = 'grey'
+                break;
+            case 'usb':
+                if (d.sensor_type === 'CCD') {
+                    d.color = "skyblue"
+                } else if (d.sensor_type === 'CMOS') {
+                    d.color = "green"
+                } else if (d.sensor_type === 'Foveon') {
+                    d.color = 'purple'
+                } else {
+                    d.color = 'white'
+                }
+                default:
+                    d.color = d[opts.color_end] ? "green" : 'grey';
+        }
+
+
+
+        return d
+    })
+
+    // y-axis
+    if (opts.vis_end === 'nothing') {
+        yAxisGroup
+            .transition()
+            .attr('transform', 'translate(' + (w + xPadding / 2) + ', 0)')
+            .attr('opacity', 0)
+    } else {
+        let yAxis = d3.axisLeft(yScale);
+        yAxisGroup.transition().call(yAxis)
+            .transition()
+            .attr('opacity', 1)
+            .attr('transform', 'translate(' + (w - xPadding / 2) + ', 0)');
+    }
+
+
+
+
+    visualizeDatapoints();
+
+
+    simulation
+        .force('forceY', d => d3.forceY(d.y))
+        .force('collide', d3.forceCollide().radius(d => d.r - 0.5))
+
+
+    setTimeout(() => {
+        simulation.restart();
+    }, durationUnit * 2.0)
 }
 
 function getSensorSize(d, i) {
@@ -600,4 +850,49 @@ function getBodySize(d, i) {
     else {
         return 0
     }
+}
+
+function getMegapixelsPerBodySize(d, i) {
+    if (d.dimensions && d.dimensions.length === 3 && d.megapixels)
+        return d.megapixels / (d.dimensions[0] * d.dimensions[1] * d.dimensions[2] / 1000000);
+    else {
+        return 0
+    }
+}
+
+
+function getMegapixelsPerWeight(d, i) {
+    return d.megapixels / d.weight;
+}
+
+function getSensorSizePerBodySize(d, i) {
+    if (d.dimensions && d.dimensions.length === 3)
+        return d.sensor_size[0] * d.sensor_size[1] / (d.dimensions[0] * d.dimensions[1] * d.dimensions[2] / 1000000);
+    else
+        return 0;
+}
+
+function getSensorSizePerWeight(d, i) {
+    return d.sensor_size[0] * d.sensor_size[1] / d.weight;
+}
+
+function getHighISO(d, i) {
+    if (!d.iso || d.iso.length != 2) return NaN;
+    return d.iso[1]
+}
+
+function getLowISO(d, i) {
+    if (!d.iso || d.iso.length != 2) return NaN;
+    return d.iso[0]
+}
+
+
+function visualizeDatapoints() {
+    graphLayer.selectAll('.datapoint')
+        .transition()
+        .attr('cx', d => d.x)
+        .attr('cy', d => d.y)
+        .attr('r', d => d.r)
+        .attr('fill', d => d.color)
+        .duration(durationUnit);
 }

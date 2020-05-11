@@ -14,7 +14,6 @@
 
     </div>
     <div id='graphic'>
-
         <div id='sections'>
             <section class='step'>
                 <div class="title"></div>
@@ -105,15 +104,15 @@
 
             <section class='step'>
                 <h2>
-                    Body Form Factor
+                    Camera Body Form Factor
                 </h2>
+                <hr>
                 <p>
                     <label for="select-body-info"><b>Visualizing</b></label>
 
                     <select id="select-body-info">
                         <option value="weight">Weight</option>
                         <option value="size">Size</option>
-
                     </select>
                 </p>
                 <div id='body-form-factor-div'>
@@ -124,21 +123,69 @@
                                 System</b></span> can be offerred with less and less weight.
 
                     </p>
-
                 </div>
+                <p>
+                    <label for="select-body-info"><b>In Comparison With</b></label>
 
+                    <select id="select-body-info-comparison">
+                        <option value="nothing">Nothing</option>
+                        <option value="sensor_size">Sensor Size</option>
+                        <option value="megapixels">Sensor Resolution</option>
 
+                    </select>
+                </p>
+                <div id='body-form-factor-div-2'>
+                    <p>
+
+                    </p>
+                </div>
             </section>
             <section class='step'>
 
             </section>
 
+            <div id='bottom'>
+                <h2>Explore more yourself</h2>
+                <p>
+                    <label for="select-vis-end"><b>Y-Axis</b></label>
 
+                    <select id="select-vis-end">
+                        <option value="nothing">Nothing</option>
+                        <option value="megapixels">Sensor Resolution</option>
+                        <option value="sensor_size">Sensor Size</option>
+                        <option value="weight">Weight</option>
+                        <option value="body_size">Body Size</option>
+                        <option value="scr_res">Screen Resolution</option>
+                        <option value="scr_size">Screen Size</option>
+                        <option value="high_iso">Highest ISO</option>
+                        <option value="low_iso">Lowest ISO</option>
+                        <option value="min_shutter">Slowest Shutter Speed</option>
+                        <option value="max_shutter">Fastest Shutter Speed</option>
+                    </select>
+                </p>
+                <p>
+                    <label for="select-color-end"><b> Colorize</b></label>
+
+                    <select id="select-color-end">
+                        <option value="brand">Brand</option>
+                        <option value="raw">RAW Support</option>
+                        <option value="ap">Aperture Priority Mode</option>
+                        <option value="sp">Shutter Priority Mode</option>
+                        <option value="int_flash">Internal Flash</option>
+                        <option value="ext_flash">External Flash Support</option>
+                        <option value="usb">USB</option>
+                        <option value="hdmi">HDMI</option>
+                        <option value="Wireless">Wi-Fi</option>
+                        <option value="battery">Battery Type</option>
+                    </select>
+                </p>
+            </div>
         </div>
 
         <div id='viz'>
 
         </div>
+
     </div>
 
     <script src='scripts/scroller.js'></script>
